@@ -33,7 +33,7 @@ app.put("/image", (req, res) => { image.handleImage(req, res, db)});
 app.post("/imageurl", (req, res) => { image.handleImageURL(req, res)});
 
 
-app.listen(3001, () => {
-    console.log("app is running on: " + "http://localhost:3001/")
+app.listen(process.env.PORT || 3000, () => {
+    console.log(`app is running on PORT: " + ${process.env.PORT}`)
 });
 
