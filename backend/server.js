@@ -18,10 +18,10 @@ app.use(cors())
 const db = knex({
     client: 'pg',
     connection: {
-        host: '127.0.0.1',
+        host: 'boiling-shelf-42050',
         port: 5432,
         user: 'postgres',
-        password: 'lekcja11',
+        password: '',
         database: 'face-recogn-db'
     }
 });
