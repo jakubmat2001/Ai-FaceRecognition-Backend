@@ -14,7 +14,7 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
-// Establising connection with our database
+// Establising connection with our real database
 const db = knex({
     client: 'pg',
     connection: {
