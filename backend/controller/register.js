@@ -30,7 +30,7 @@ const handleRegister = (req, res, db, bcrypt) => {
         // Execute transaction if no errors, otherwise revert back to pre-transaction state
         .then(trx.commit) 
         .catch(trx.rollback)
-    }).catch(err => res.status(400).json("unable to register, sorry ty again later"))
+    }).catch(err => res.status(400).json(err))
 };
 
 module.exports = {
