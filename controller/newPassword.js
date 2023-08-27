@@ -17,7 +17,6 @@ const handleChangePassword = (req, res, db, bcrypt) => {
                     .update({
                         hash: newHash,
                     })
-                    .returning('*')
                     .then(rowsUpdated => {
                         if (rowsUpdated === 0) {
                             res.json("No rows updated. Something went wrong.");
