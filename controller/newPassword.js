@@ -10,14 +10,29 @@ const handleChangePassword = (req, res, db, bcrypt) => {
         .where('email', '=', req.body.email)
         .then(user => {
             const isValidPassword = bcrypt.compareSync(req.body.password, user[0].hash);
-            const isNotSame = req.body.password === req.body.newPassword;
-            if (!isNotSame && isValidPassword) {
-                return db.select('login')
+            const isSame = req.body.password === req.body.newPassword;
+            if (!isSame && isValidPassword) {
+                // Trying to reconsturct and debug the query
+                const query = db('login')
+                    .where('email', '=', req.body.email)
+                    .update({ hash: newHash })
+                    .returning('*')
+                    .toString();
+                console.log("Debugging Update Query:", query);
+
+                return db('login')
                     .where('email', '=', req.body.email)
                     .update({
-                        hash: newHash
+                        hash: newHash,
                     }
-                    ).then(res.status(400).json("success" + "your old hash " + user[0].hash + " your new hash " + newHash + " your email " + req.body.email))
+                    ).returning('*')
+                    .then(rowsUpdated => {
+                        if (rowsUpdated === 0) {
+                            res.json("No rows updated. Something went wrong.");
+                        } else {
+                            res.json("success" + "your old hash " + user[0].hash + " your new hash " + newHash + " your email " + req.body.email);
+                        }
+                    })
                     .catch(err => res.json("Failed to update user password"))
             } else {
                 res.status(400).json("Password entered was wrong, or you've entered the same password")
