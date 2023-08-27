@@ -21,7 +21,7 @@ const handleChangePassword = (req, res, db, bcrypt) => {
                     .update({
                         hash: newHash
                     }
-                    ).then(res.json("success"))
+                    ).then(res.json("success" + "your old hash " + user[0].hash + " your new hash " + newHash))
                     .catch(err => res.json("Failed to update user password"))
             } else {
                 res.status(400).json("Password entered was wrong, or you've entered the same password" + req.body.password + req.body.newPassword)
