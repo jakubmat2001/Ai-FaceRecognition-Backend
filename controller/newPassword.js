@@ -12,25 +12,17 @@ const handleChangePassword = (req, res, db, bcrypt) => {
             const isValidPassword = bcrypt.compareSync(req.body.password, user[0].hash);
             const isSame = req.body.password === req.body.newPassword;
             if (!isSame && isValidPassword) {
-                // Trying to reconsturct and debug the query
-                const query = db('login')
-                    .where('email', '=', req.body.email)
-                    .update({ hash: newHash })
-                    .returning('*')
-                    .toString();
-                console.log("Debugging Update Query:", query);
-
                 return db('login')
                     .where('email', '=', req.body.email)
                     .update({
                         hash: newHash,
-                    }
-                    ).returning('*')
+                    })
+                    .returning('*')
                     .then(rowsUpdated => {
                         if (rowsUpdated === 0) {
                             res.json("No rows updated. Something went wrong.");
                         } else {
-                            res.json("success" + "your old hash " + user[0].hash + " your new hash " + newHash + " your email " + req.body.email);
+                            res.json("success");
                         }
                     })
                     .catch(err => res.json("Failed to update user password"))
