@@ -2,7 +2,15 @@
 const handleRegister = (req, res, db, bcrypt) => {
     const {email, name, password} = req.body;
     if (!email || !name || !password){
-        return res.status(400).json("Incorrect form submission")
+        return res.status(400).json("Form")
+    }
+    // Check if password at least 6 characters 
+    if (password.length < 6 ){
+        return res.status(400).json("Lenght")
+    }
+    // Check if first character is aletter and starts with uppercase
+    if (!(/^[A-Z]/.test(password.charAt(0)))) {
+        return res.status(400).json("Uppercase")
     }
     const hash = bcrypt.hashSync(password); // Hash and store user entered password
     
@@ -30,7 +38,7 @@ const handleRegister = (req, res, db, bcrypt) => {
         // Execute transaction if no errors, otherwise revert back to pre-transaction state
         .then(trx.commit) 
         .catch(trx.rollback)
-    }).catch(err => res.status(400).json(err))
+    }).catch(err => res.status(400).json("Failed"))
 };
 
 module.exports = {

@@ -1,34 +1,44 @@
 const handleChangePassword = (req, res, db, bcrypt) => {
-    const { email, password, newPassword } = req.body;
-    if (!password || !newPassword) {
-        return res.status(400).json("Enter your old and new passwords into form")
+    const { email, password, newPassword , confirmNewPassword} = req.body;
+    if (!password || !newPassword || !confirmNewPassword) {
+        return res.status(400).json("New")
     } else if (!email) {
-        return res.status(400).json("Email not found")
+        return res.status(400).json("Email")
     }
-    const newHash = bcrypt.hashSync(req.body.newPassword);
+    // Check if password at least 6 characters 
+    if (newPassword.length < 6 ) {
+        return res.status(400).json("Length")
+    }
+    // Check if first character is aletter and starts with uppercase
+    if (!(/^[A-Z]/.test(newPassword.charAt(0)))) {
+        return res.status(400).json("Uppercase")
+    }
+    
+    const newHash = bcrypt.hashSync(newPassword);
     db.select('email', 'hash').from('login')
-        .where('email', '=', req.body.email)
+        .where('email', '=', email)
         .then(user => {
-            const isValidPassword = bcrypt.compareSync(req.body.password, user[0].hash);
-            const isSame = req.body.password === req.body.newPassword;
-            if (!isSame && isValidPassword) {
+            const isValidPassword = bcrypt.compareSync(password, user[0].hash);
+            const isSame = (password === newPassword);
+            const isSameAsConfirm = (newPassword === confirmNewPassword);
+            if (isValidPassword && !isSame && isSameAsConfirm) {
                 return db('login')
-                    .where('email', '=', req.body.email)
+                    .where('email', '=', email)
                     .update({
                         hash: newHash,
                     })
                     .then(rowsUpdated => {
                         if (rowsUpdated === 0) {
-                            res.json("No rows updated. Something went wrong.");
+                            res.json("No rows updated");
                         } else {
-                            res.json("success");
+                            res.json("Success");
                         }
                     })
-                    .catch(err => res.json("Failed to update user password"))
+                    .catch(err => res.json("Update"))
             } else {
-                res.status(400).json("Password entered was wrong, or you've entered the same password")
+                res.status(400).json("Same")
             }
-        }).catch(err => res.status("Failed to find a user, please log-in and try again"))
+        }).catch(err => res.status("User not found"))
 };
 
 module.exports = {
