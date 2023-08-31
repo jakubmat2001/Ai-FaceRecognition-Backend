@@ -1,7 +1,7 @@
 // Add a user with the following data to our database
 const handleRegister = (req, res, db, bcrypt) => {
-    const {email, name, password} = req.body;
-    if (!email || !name || !password){
+    const {email, name, password, confirmPassword} = req.body;
+    if (!email || !name || !password || !confirmPassword){
         return res.status(400).json("Form")
     }
     // Check if password at least 6 characters 
@@ -12,8 +12,13 @@ const handleRegister = (req, res, db, bcrypt) => {
     if (!(/^[A-Z]/.test(password.charAt(0)))) {
         return res.status(400).json("Uppercase")
     }
+
+    //  Check that password matches confirmed password
+    if (password !== confirmPassword){
+        return res.status(400).json("Same")
+    }
+
     const hash = bcrypt.hashSync(password); // Hash and store user entered password
-    
     // Start a transaction which if fails, reverts all the changes made inside of it
     // This method is similar to conducting bank transfer transactions where if all the conditons are met
     // then all the code inside of the transactions exectures all together

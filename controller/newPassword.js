@@ -13,15 +13,21 @@ const handleChangePassword = (req, res, db, bcrypt) => {
     if (!(/^[A-Z]/.test(newPassword.charAt(0)))) {
         return res.status(400).json("Uppercase")
     }
+
+    if (password === newPassword){
+        return res.status(400).json("Different")
+    }
+
+    if (newPassword !== confirmNewPassword){
+        return res.status(400).json("Same")
+    }
     
     const newHash = bcrypt.hashSync(newPassword);
     db.select('email', 'hash').from('login')
         .where('email', '=', email)
         .then(user => {
             const isValidPassword = bcrypt.compareSync(password, user[0].hash);
-            const isSame = (password === newPassword);
-            const isSameAsConfirm = (newPassword === confirmNewPassword);
-            if (isValidPassword && !isSame && isSameAsConfirm) {
+            if (isValidPassword) {
                 return db('login')
                     .where('email', '=', email)
                     .update({
@@ -36,7 +42,7 @@ const handleChangePassword = (req, res, db, bcrypt) => {
                     })
                     .catch(err => res.json("Update"))
             } else {
-                res.status(400).json("Same")
+                res.status(400).json("Error")
             }
         }).catch(err => res.status("User not found"))
 };
