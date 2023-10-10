@@ -16,16 +16,29 @@ const app = express()
 app.use(bodyParser.json())
 app.use(cors())
 
-// Establising connection with our real database
+
+// Establising connection with our localy stored database
 const db = knex({
     client: 'pg',
     connection: {
-        connectionString: process.env.DATABASE_URL,
-        ssl: {
-            rejectUnauthorized: false
-        }
+        host: '127.0.0.1',
+        port: 5432,
+        user: 'postgres',
+        password: 'lekcja11',
+        database: 'facerecogndb'
     }
 });
+
+// Establising connection with our real database
+// const db = knex({
+//     client: 'pg',
+//     connection: {
+//         connectionString: process.env.DATABASE_URL,
+//         ssl: {
+//             rejectUnauthorized: false
+//         }
+//     }
+// });
 
 app.post("/register", (req, res) => { register.handleRegister(req, res, db, bcrypt) });
 app.post("/signin", (req, res) => { signin.handleSignin(req, res, db, bcrypt) });
