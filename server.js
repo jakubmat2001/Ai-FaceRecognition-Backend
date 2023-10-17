@@ -20,13 +20,7 @@ app.use(cors())
 // Establising connection with our localy stored database
 const db = knex({
     client: 'pg',
-    connection: {
-        host: '127.0.0.1',
-        port: 5432,
-        user: 'postgres',
-        password: 'lekcja11',
-        database: 'facerecogndb'
-    }
+    connection: process.env.POSTGRES_URI
 });
 
 // Establising connection with our real database
