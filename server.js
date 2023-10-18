@@ -17,10 +17,21 @@ app.use(bodyParser.json())
 app.use(cors())
 
 
-// Establising connection with our localy stored database
+// Establising connection with our localy stored database on docker
+// const db = knex({
+//     client: 'pg',
+//     connection: process.env.POSTGRES_URI
+// });
+
 const db = knex({
     client: 'pg',
-    connection: process.env.POSTGRES_URI
+    connection: {
+        host: '127.0.0.1',
+        port: 5432,
+        user: 'postgres',
+        password: 'lekcja11',
+        database: 'facerecogndb'
+    }
 });
 
 // Establising connection with our real database
