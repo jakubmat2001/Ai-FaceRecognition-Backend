@@ -18,21 +18,22 @@ app.use(cors())
 
 
 // Establising connection with our localy stored database on docker
-// const db = knex({
-//     client: 'pg',
-//     connection: process.env.POSTGRES_URI
-// });
-
 const db = knex({
     client: 'pg',
-    connection: {
-        host: '127.0.0.1',
-        port: 5432,
-        user: 'postgres',
-        password: 'lekcja11',
-        database: 'facerecogndb'
-    }
+    connection: process.env.POSTGRES_URI
 });
+
+// Establishing connection with our locally hosted database
+// const db = knex({
+//     client: 'pg',
+//     connection: {
+//         host: '127.0.0.1',
+//         port: 5432,
+//         user: 'postgres',
+//         password: 'lekcja11',
+//         database: 'facerecogndb'
+//     }
+// });
 
 // Establising connection with our real database
 // const db = knex({
@@ -47,10 +48,14 @@ const db = knex({
 
 app.post("/register", (req, res) => { register.handleRegister(req, res, db, bcrypt) });
 app.post("/signin", (req, res) => { signin.handleSignin(req, res, db, bcrypt) });
-app.get("/profile/:id", (req, res) => { profile.handleProfile(req, res, db) });
-app.put("/image", (req, res) => { image.handleImage(req, res, db) });
+app.post("/profile/:id", (req, res) => { profile.handleProfileUpdate(req, res, db) });
 app.post("/imageurl", (req, res) => { image.handleImageURL(req, res) });
+
+app.get("/profile/:id", (req, res) => { profile.handleProfile(req, res, db) });
+
+app.put("/image", (req, res) => { image.handleImage(req, res, db) });
 app.put("/password", (req, res) => { password.handleChangePassword(req, res, db, bcrypt) });
+
 app.delete("/delete", (req, res) => { deleteAccount.handleDeleteAccount(req, res, db, bcrypt) });
 
 

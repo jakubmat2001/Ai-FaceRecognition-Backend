@@ -4,13 +4,10 @@ const app = new clarifai.App({
 })
 
 const handleImageURL = (req, res) => {
-    console.log("Received data:", req.body.input); // Log the data received in the request
     app.models.predict("face-detection", req.body.input)
      .then(data => {
-         console.log("Response data:", data); // Log the response data
          res.json(data);
      }).catch(err => {
-         console.error("Error:", err); // Log the error
          res.status(400).json("Failed to work with API.");
      });
  }
