@@ -9,8 +9,10 @@ services:
     working_dir: /the/workdir/Ai-FaceRecognition-Backend
     environment:
       POSTGRES_URI: postgres://jakub:lekcja11@postgres:5432/docker-face-recogn # custom URI for connecting to our DB
+      REDIS_URI: redis://redis:6379
     links:
      - postgres
+     - redis
     ports: 
       - "3001:3001"
     volumes:
@@ -27,3 +29,8 @@ services:
     ports:
       - "5432:5432"
       
+# services for redis db
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
