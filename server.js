@@ -11,6 +11,7 @@ const profile = require('./controller/profile');
 const image = require('./controller/image');
 const password = require('./controller/newPassword')
 const deleteAccount = require('./controller/deleteAccount')
+const auth = require("./controller/authorization")
 
 const app = express()
 app.use(bodyParser.json())
@@ -48,15 +49,15 @@ const db = knex({
 
 app.post("/register", (req, res) => { register.handleRegister(req, res, db, bcrypt) });
 app.post("/signin",  signin.handleSigninAuth(db, bcrypt));
-app.post("/profile/:id", (req, res) => { profile.handleProfileUpdate(req, res, db) });
-app.post("/imageurl", (req, res) => { image.handleImageURL(req, res) });
+app.post("/profile/:id", auth.requireAuth, (req, res) => { profile.handleProfileUpdate(req, res, db) });
+app.post("/imageurl", auth.requireAuth,(req, res) => { image.handleImageURL(req, res) });
 
-app.get("/profile/:id", (req, res) => { profile.handleProfile(req, res, db) });
+app.get("/profile/:id",  auth.requireAuth, (req, res) => { profile.handleProfile(req, res, db) });
 
-app.put("/image", (req, res) => { image.handleImage(req, res, db) });
-app.put("/password", (req, res) => { password.handleChangePassword(req, res, db, bcrypt) });
+app.put("/image", auth.requireAuth, (req, res) => { image.handleImage(req, res, db) });
+app.put("/password", auth.requireAuth, (req, res) => { password.handleChangePassword(req, res, db, bcrypt) });
 
-app.delete("/delete", (req, res) => { deleteAccount.handleDeleteAccount(req, res, db, bcrypt) });
+app.delete("/delete", auth.requireAuth, (req, res) => { deleteAccount.handleDeleteAccount(req, res, db, bcrypt) });
 
 
 app.listen(process.env.PORT || 3001, () => {

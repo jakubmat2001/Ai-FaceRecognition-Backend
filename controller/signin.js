@@ -16,23 +16,27 @@ redisConnect()
 const handleSignin = (db, bcrypt, req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return Promise.reject("Form")
+        return Promise.reject("Empty Form Fields")
     }
     return db.select('email', 'hash').from('login')
         .where('email', '=', req.body.email) // Get email and hased password from login table
         .then(data => {
+            if (data.length === 0) {
+                return Promise.reject('User Not Found')
+            }
             const isValidPassword = bcrypt.compareSync(req.body.password, data[0].hash); // See if the hashed password matches original
             if (isValidPassword) {
                 return db.select('*').from('users')
                     .where('email', '=', req.body.email) // If password is valid, then check if email matches
-                    .then(user => user[0]) // Return a user to the frontend if all conditions are met
-                    
-                    .catch(err => Promise.reject('Not Found'))
-            } else {
-                Promise.reject("Password Not Matching")
+                    .then(user => {
+                        return user[0]
+                    })
             }
-        }).catch(err => Promise.reject('Not Existing'))
+            return Promise.reject("Password Not Matching")
+            
+        }).catch(err => err)
 }
+
 
 const signinToken = (email) => {
     const jwtPayload = { email };
@@ -45,7 +49,7 @@ const getAuthTokenId = (req, res) => {
         if (err || !reply) {
             return res.status(401).send("unauthorized");
         }
-        return res.json({id: reply});
+        return res.json({ id: reply });
     });
 }
 
@@ -58,9 +62,9 @@ const createSessions = (user) => {
     const { email, id } = user;
     const token = signinToken(email)
     return setToken(token, id)
-        .then(() => { return { success: "true", userID: id, token } 
-    }).catch(console.log);
-        
+        .then(() => {
+            return { success: "true", userID: id, token }
+        }).catch(console.log("session not set"));
 }
 
 const handleSigninAuth = (db, bcrypt) => (req, res) => {
@@ -74,5 +78,6 @@ const handleSigninAuth = (db, bcrypt) => (req, res) => {
 }
 
 module.exports = {
-    handleSigninAuth: handleSigninAuth
+    handleSigninAuth: handleSigninAuth,
+    redisClient: redisClient
 }
