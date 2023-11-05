@@ -2,9 +2,9 @@
 const handleRegister = (req, res, db, bcrypt) => {
     const { email, name, password, confirmPassword } = req.body;
     if (formRegisterValidationChecks(res, email, name, password, confirmPassword)) {
+        // Check if email provided by a user already exists in the databse
         db.select('email').from('login').where('email', '=', email)
             .then(user => {
-                console.log(user)
                 if (user.length > 0 && user[0].email === email) {
                     console.log("same email");
                     return res.status(400).json("Existing Email")
@@ -39,42 +39,29 @@ const handleRegister = (req, res, db, bcrypt) => {
     }
 }
 
-
-
 const formRegisterValidationChecks = (res, email, name, password, confirmPassword) => {
+    // Ensure that no fields upon register subission are empty
     if (!email || !name || !password || !confirmPassword) {
-        console.log("missing fields triggered")
         res.status(400).json("Unfilled From Fields")
         return false;
     }
     // Check if password at least 6 characters 
     if (password.length < 6) {
-        console.log("password < 6")
         res.status(400).json("Password Length")
         return false;
     }
     // Check if first character is aletter and starts with uppercase
     if (!(/^[A-Z]/.test(password.charAt(0)))) {
-        console.log("Not between A-Z and uppercase")
         res.status(400).json("Uppercase Letter")
         return false;
-
     }
     //  Check that password matches confirmed password
     if (password !== confirmPassword) {
-        console.log("Password not matching Confirm Password")
         res.status(400).json("Same Password Entered")
         return false;
-
     }
-    console.log("true triggered")
     return true
 }
-
-const checkForEmail = (db, res, email) => {
-
-}
-
 
 module.exports = {
     handleRegister: handleRegister

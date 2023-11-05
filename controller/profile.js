@@ -15,10 +15,10 @@ const handleProfile = (req, res, db) => {
 
 const handleProfileUpdate = (req, res, db) => {
     const { id } = req.params;
-    const { name} = req.body.formInput;
+    const { name } = req.body.formInput;
     db('users')
-    .where({id})
-    .update({name})
+    .where({ id })
+    .update({ name: name })
     .then(response => {
         if (response) {
             res.json("success")
