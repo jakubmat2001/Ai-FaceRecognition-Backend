@@ -28,8 +28,12 @@ const handleSignin = (db, bcrypt, req, res) => {
             if (isValidPassword) {
                 return db.select('*').from('users')
                     .where('email', '=', req.body.email) // If password is valid, then check if email matches
-                    .then(user => {
-                        return user[0]
+                    .then(users => {
+                        const user = users[0]
+                        if (user.profile_img){
+                            user.profile_img = Buffer.from(user.profile_img).toString('base64');
+                        }
+                        return users[0]
                     })
             }
             return Promise.reject("Password Not Matching")
