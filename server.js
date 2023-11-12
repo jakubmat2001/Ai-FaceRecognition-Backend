@@ -28,7 +28,11 @@ const db = knex({
 });
 
 
-const upload = multer({ dest: "/uploads" })
+
+const upload = multer({ 
+    dest: "/uploads",
+    limits: {fieldNameSize: 1000}
+})
 
 app.post("/register", (req, res) => { register.handleRegister(req, res, db, bcrypt) });
 app.post("/signin",  signin.handleSigninAuth(db, bcrypt));

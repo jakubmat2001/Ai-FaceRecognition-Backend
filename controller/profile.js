@@ -55,7 +55,7 @@ const handleProfileUpdate = (req, res, db) => {
             })
             .catch(err => res.status(400).json("Error updating user profile: " + err))
             .finally(() => {
-                // Clean up the uploaded file asynchronously
+                // Clean up the uploaded file asynchronously, prevents us from cloggin up the server with images
                 fs.unlink(imageFile.path, unlinkErr => {
                     if (unlinkErr) {
                         console.error("Error removing temporary image file", unlinkErr);
@@ -65,12 +65,13 @@ const handleProfileUpdate = (req, res, db) => {
         });
     } else {
         // If there's no image file, just update the name
+        console.log("else executed")
         db('users')
         .where({ id })
         .update(updateObject)
         .then(response => {
             if (response) {
-                res.json("success");
+                res.json({ success: true})
             } else {
                 res.status(400).json("Unable to update");
             }
