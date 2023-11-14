@@ -1,3 +1,7 @@
+const nodemailer = require("nodemailer");
+const crypto = require('crypto');
+require('dotenv').config();
+
 // Add a user with the following data to our database
 const handleRegister = (req, res, db, bcrypt) => {
     const { email, name, password, confirmPassword } = req.body;
@@ -10,6 +14,8 @@ const handleRegister = (req, res, db, bcrypt) => {
                     return res.status(400).json("Existing Email")
                 }
                 const hash = bcrypt.hashSync(password); // Hash and store user entered password
+                const verificationToken = generateVerificationToken();
+
                 // Start a transaction which if fails, reverts all the changes made inside of it
                 // This method is similar to conducting bank transfer transactions where if all the conditons are met
                 // then all the code inside of the transactions exectures all together
@@ -26,9 +32,12 @@ const handleRegister = (req, res, db, bcrypt) => {
                                 .insert({
                                     email: loginEmail[0].email,
                                     name: name,
+                                    verification_token: verificationToken,
+                                    email_verified: false,
                                     joined: new Date()
                                 }).then(user => {
                                     res.json(user[0]); // Out of all users returned, return the one that registered
+                                    sendVerificationEmail(email, verificationToken);
                                 })
                         })
                         // Execute transaction if no errors, otherwise revert back to pre-transaction state
@@ -37,6 +46,50 @@ const handleRegister = (req, res, db, bcrypt) => {
                 }).catch(err => res.status(400).json("Failed"))
             })
     }
+}
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    }
+});
+
+const sendVerificationEmail = (email, token) => {
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Email Verification',
+        html: `<p>Click <a href="http://localhost:3001/verify-email?token=${token}">here</a> to verify your email.</p>`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log("ERR COMMING FROM IF ERROR ON NODEMAILER")
+            console.log(error);
+        } else {
+            console.log('Verification email sent: ' + info.response);
+        }
+    });
+};
+
+const generateVerificationToken = () => {
+    return crypto.randomBytes(20).toString('hex');
+};
+
+const verifyUser = (req, res, db) => {
+    const { token } = req.query;
+    db('users')
+    .where('verification_token', '=', token)
+    .update({ email_verified: true })
+    .then(response => {
+        if (response){
+            res.json({ success: true })
+        }else{
+            res.status(400).json("Verification token not matching");
+        }
+    }).catch(console.log)
 }
 
 const formRegisterValidationChecks = (res, email, name, password, confirmPassword) => {
@@ -64,5 +117,6 @@ const formRegisterValidationChecks = (res, email, name, password, confirmPasswor
 }
 
 module.exports = {
-    handleRegister: handleRegister
+    handleRegister: handleRegister,
+    verifyUser: verifyUser
 };
