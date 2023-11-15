@@ -45,7 +45,7 @@ app.post("/imageurl", auth.requireAuth,(req, res) => { image.handleImageURL(req,
 app.post("/resend-verification", (req, res) => {resendVerification.resendVerificationEmail(req, res, db)})
 
 app.get("/profile/:id",  auth.requireAuth, (req, res) => { profile.handleProfile(req, res, db) });
-app.get("/verify-email", (req, res) => { register.verifyUser(req, res, db) });
+app.get("/verify-email", (req, res) => { resendVerification.verifyUser(req, res, db) });
 
 app.put("/image", auth.requireAuth, (req, res) => { image.handleImage(req, res, db) });
 app.put("/password", auth.requireAuth, (req, res) => { password.handleChangePassword(req, res, db, bcrypt) });

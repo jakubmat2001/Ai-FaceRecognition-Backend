@@ -46,7 +46,6 @@ const handleSignin = (db, bcrypt, req, res) => {
                         }
                     });
             } else {
-                console.log(verifUser[0].email_verified);
                 return Promise.reject("User not verified");
             }
         })
