@@ -12,6 +12,7 @@ const profile = require('./controller/profile');
 const image = require('./controller/image');
 const password = require('./controller/newPassword')
 const deleteAccount = require('./controller/deleteAccount')
+const resendVerification = require('./controller/emailVerification')
 const auth = require("./controller/authorization")
 
 const app = express()
@@ -41,6 +42,7 @@ app.post("/profile/:id", upload.fields([{ name: 'image' }, { name: 'name' }]), a
     });
 
 app.post("/imageurl", auth.requireAuth,(req, res) => { image.handleImageURL(req, res) });
+app.post("/resend-verification", (req, res) => {resendVerification.resendVerificationEmail(req, res, db)})
 
 app.get("/profile/:id",  auth.requireAuth, (req, res) => { profile.handleProfile(req, res, db) });
 app.get("/verify-email", (req, res) => { register.verifyUser(req, res, db) });
