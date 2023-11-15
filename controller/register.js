@@ -15,7 +15,6 @@ const handleRegister = (req, res, db, bcrypt) => {
                 }
                 const hash = bcrypt.hashSync(password); // Hash and store user entered password
                 const verificationToken = generateVerificationToken();
-
                 // Start a transaction which if fails, reverts all the changes made inside of it
                 // This method is similar to conducting bank transfer transactions where if all the conditons are met
                 // then all the code inside of the transactions exectures all together

@@ -16,30 +16,43 @@ redisConnect()
 const handleSignin = (db, bcrypt, req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
-        return Promise.reject("Empty Form Fields")
+        return Promise.reject("Empty Form Fields");
     }
-    return db.select('email', 'hash').from('login')
-        .where('email', '=', req.body.email) // Get email and hased password from login table
-        .then(data => {
-            if (data.length === 0) {
-                return Promise.reject('User Not Found')
+    return db.select('email_verified').from('users').where('email', '=', email)
+        .then(verifUser => {
+            if (verifUser.length === 0) {
+                return Promise.reject('User Not Found');
             }
-            const isValidPassword = bcrypt.compareSync(req.body.password, data[0].hash); // See if the hashed password matches original
-            if (isValidPassword) {
-                return db.select('*').from('users')
-                    .where('email', '=', req.body.email) // If password is valid, then check if email matches
-                    .then(users => {
-                        const user = users[0]
-                        if (user.profile_img){
-                            user.profile_img = Buffer.from(user.profile_img).toString('base64');
+            if (verifUser[0].email_verified == true) {
+                return db.select('email', 'hash').from('login')
+                    .where('email', '=', email) // Get email and hashed password from login table
+                    .then(data => {
+                        if (data.length === 0) {
+                            return Promise.reject('User Not Found');
                         }
-                        return users[0]
-                    })
+                        const isValidPassword = bcrypt.compareSync(password, data[0].hash); // See if the hashed password matches original
+                        if (isValidPassword) {
+                            return db.select('*').from('users')
+                                .where('email', '=', email) // If password is valid, then check if email matches
+                                .then(users => {
+                                    const user = users[0];
+                                    if (user.profile_img) {
+                                        user.profile_img = Buffer.from(user.profile_img).toString('base64');
+                                    }
+                                    return user;
+                                })
+                        } else {
+                            return Promise.reject("Password Not Matching");
+                        }
+                    });
+            } else {
+                console.log(verifUser[0].email_verified);
+                return Promise.reject("User not verified");
             }
-            return Promise.reject("Password Not Matching")
-            
-        }).catch(err => err)
-}
+        })
+};
+
+
 
 
 const signinToken = (email) => {
@@ -71,15 +84,27 @@ const createSessions = (user) => {
         }).catch(console.log("session not set"));
 }
 
+// Convert this to try statment
 const handleSigninAuth = (db, bcrypt) => (req, res) => {
     const { authorization } = req.headers;
-    return authorization ? getAuthTokenId(req, res)
-        : handleSignin(db, bcrypt, req, res)
-            .then(data =>
-                data.id && data.email ? createSessions(data) : Promise.reject(data))
+    if (authorization) {
+        return getAuthTokenId(req, res);
+    } else {
+        return handleSignin(db, bcrypt, req, res)
+            .then(data => {
+                if (data.id && data.email) {
+                    return createSessions(data);
+                } 
+            })
             .then(session => res.json(session))
-            .catch(err => res.status(400).json(err));
-}
+            .catch(err => {
+                console.log(`an error occured ${err}`)
+                res.status(400).json(err);
+            })
+    }
+};
+
+
 
 module.exports = {
     handleSigninAuth: handleSigninAuth,
