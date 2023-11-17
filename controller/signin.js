@@ -80,7 +80,7 @@ const createSessions = (user) => {
     return setToken(token, id)
         .then(() => {
             return { success: "true", userID: id, token }
-        }).catch(console.log("session not set"));
+        }).catch(err => err);
 }
 
 // Convert this to try statment
@@ -97,7 +97,6 @@ const handleSigninAuth = (db, bcrypt) => (req, res) => {
             })
             .then(session => res.json(session))
             .catch(err => {
-                console.log(`an error occured ${err}`)
                 res.status(400).json(err);
             })
     }

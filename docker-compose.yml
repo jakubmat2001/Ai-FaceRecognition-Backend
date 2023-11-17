@@ -10,8 +10,8 @@ services:
     environment:
       POSTGRES_URI: postgres://jakub:lekcja11@postgres:5432/docker-face-recogn # custom URI for connecting to our DB
       REDIS_URI: redis://redis:6379
-      EMAIL_USER: jakubmatusik11@gmail.com
-      EMAIL_PASS: axir tzdf nwbi woqy  
+      EMAIL_USER: facerecnewai@gmail.com
+      EMAIL_PASS: wsab hfua tbdn fxvc
     links:
      - postgres
      - redis

@@ -22,11 +22,8 @@ const handleProfile = (req, res, db) => {
 const handleProfileUpdate = (req, res, db) => {
     const { id } = req.params;
     const { name } = req.body; 
-    // Check if image passed by exists and if not set imageFile const to null
+    // Check if image passed exists and if not set imageFile const to null
     const imageFile = req.files && req.files["image"] ? req.files["image"][0] : null; 
-
-    console.log(name); 
-    console.log(imageFile); 
 
     // Prepare the update object
     const updateObject = { name: name };
@@ -40,7 +37,6 @@ const handleProfileUpdate = (req, res, db) => {
             
             updateObject.profile_img = imageBuffer;
 
-            // Update the user's profile in the database
             db('users')
             .where({ id })
             .update(updateObject)

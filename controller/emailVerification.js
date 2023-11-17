@@ -28,7 +28,7 @@ const resendVerificationEmail = (req, res, db) => {
             sendMail.sendVerificationEmail(email, newToken)
             res.json("Verification sent")
         }
-    }).catch(err => res.status(400).json("error occured in resVer: " + err))
+    }).catch(err => res.status(400).json(err))
 }
 
 

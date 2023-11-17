@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const sendMail = require('../utility/sendMail')
-
 require('dotenv').config();
 
 // Add a user with the following data to our database
