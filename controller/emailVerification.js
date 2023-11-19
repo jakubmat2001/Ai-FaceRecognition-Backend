@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const sendMail = require('../utility/sendMail')
+const sendHtml = require('../utility/sendHtml')
 require('dotenv').config();
 
 const verifyUser = (req, res, db) => {
@@ -9,30 +10,9 @@ const verifyUser = (req, res, db) => {
         .update({ email_verified: true })
         .then(response => {
             if (response) {
-                res.send(`<html>
-                <head>
-                    <title>Verification Success</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; 
-                            display: flex; justify-content: center; align-items: center; height: 100vh;
-                        }
-                        .verification-container { 
-                            display: flex; flex-direction: column;align-items: center;
-                            justify-content: center; text-align: center;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="verification-container">
-                        <h1>Verification Successful</h1>
-                        <p>Your account has been successfully verified.</p>
-                        <p>You can now headback and signin</p>
-                    </div>
-                </body>
-            </html>`)
+                res.send(sendHtml.onSuccessHTML())
             } else {
-                res.status(400).json("Verification token not matching");
+                res.send(sendHtml.onFailureHTML());
             }
         }).catch(console.log)
 }
