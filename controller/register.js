@@ -36,7 +36,7 @@ const handleRegister = (req, res, db, bcrypt) => {
                                 }).then(user => {
                                     res.json(user[0]); // Out of all users returned, return the one that registered
                                     // This function is now utility function, allows for re-usability
-                                    sendMail.sendVerificationEmail(email, verificationToken);
+                                    sendMail.sendVerificationEmail(name, email, verificationToken);
                                 })
                         })
                         // Execute transaction if no errors, otherwise revert back to pre-transaction state
@@ -50,8 +50,6 @@ const handleRegister = (req, res, db, bcrypt) => {
 const generateVerificationToken = () => {
     return crypto.randomBytes(20).toString('hex');
 };
-
-
 
 const formRegisterValidationChecks = (res, email, name, password, confirmPassword) => {
     // Ensure that no fields upon register subission are empty

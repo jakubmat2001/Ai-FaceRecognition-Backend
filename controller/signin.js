@@ -51,9 +51,6 @@ const handleSignin = (db, bcrypt, req, res) => {
         })
 };
 
-
-
-
 const signinToken = (email) => {
     const jwtPayload = { email };
     return jwt.sign(jwtPayload, 'JWT-SECRET', { expiresIn: "1h" });
@@ -101,8 +98,6 @@ const handleSigninAuth = (db, bcrypt) => (req, res) => {
             })
     }
 };
-
-
 
 module.exports = {
     handleSigninAuth: handleSigninAuth,
