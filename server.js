@@ -4,6 +4,7 @@ const knex = require('knex')
 const cors = require('cors')
 const bcrypt = require('bcryptjs');
 const multer = require("multer");
+require('dotenv').config();
 
 // Importing routes to the end-point req
 const register = require('./controller/register');
@@ -25,7 +26,13 @@ app.use(cors())
 // Establising connection with our localy stored database on docker
 const db = knex({
     client: 'pg',
-    connection: process.env.POSTGRES_URI
+    connection: {
+        host : process.env.POSTGRES_HOST, 
+        user : process.env.POSTGRES_USER, 
+        password : process.env.POSTGRES_PASSWORD, 
+        database : process.env.POSTGRES_DB, 
+        port: process.env.POSTGRES_PORT 
+    }
 });
 
 

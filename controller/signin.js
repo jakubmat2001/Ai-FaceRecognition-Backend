@@ -1,9 +1,13 @@
 const jwt = require("jsonwebtoken");
 const redis = require("redis");
 
+const REDIS_ENDPOINT = 'redis-ai-face-recogn.ktgg4o.clustercfg.euw2.cache.amazonaws.com';
+const REDIS_PORT = 6379;
+
 // Redis db, prepared for production deployment :)
 const redisClient = redis.createClient({
-    url: 'redis://redis:6379',
+    host: REDIS_ENDPOINT,
+    port: REDIS_PORT,
     legacyMode: true
 });
 
@@ -11,6 +15,7 @@ async function redisConnect() {
     return await redisClient.connect();
 }
 redisConnect()
+
 
 // Check if an existing users credentials match 
 const handleSignin = (db, bcrypt, req, res) => {
