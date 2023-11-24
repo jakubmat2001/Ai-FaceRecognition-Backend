@@ -27,11 +27,11 @@ app.use(cors())
 const db = knex({
     client: 'pg',
     connection: {
-        host : process.env.POSTGRES_HOST, 
-        user : process.env.POSTGRES_USER, 
-        password : process.env.POSTGRES_PASSWORD, 
-        database : process.env.POSTGRES_DB, 
-        port: process.env.POSTGRES_PORT 
+        host : "face-recogn-db.cpdy0cwju4g1.eu-west-2.rds.amazonaws.com", 
+        user : "postgres", 
+        password : "lekcja11", 
+        database : "postgres", 
+        port: 5432 
     }
 });
 
@@ -53,6 +53,7 @@ app.post("/resend-verification", (req, res) => {resendVerification.resendVerific
 
 app.get("/profile/:id",  auth.requireAuth, (req, res) => { profile.handleProfile(req, res, db) });
 app.get("/verify-email", (req, res) => { resendVerification.verifyUser(req, res, db) });
+app.get("/", (req, res) => res.json("app is running flawlessly"))
 
 app.put("/image", auth.requireAuth, (req, res) => { image.handleImage(req, res, db) });
 app.put("/password", auth.requireAuth, (req, res) => { password.handleChangePassword(req, res, db, bcrypt) });
