@@ -1,13 +1,11 @@
 const jwt = require("jsonwebtoken");
 const redis = require("redis");
-
-const REDIS_ENDPOINT = 'redis-ai-face-recogn.ktgg4o.clustercfg.euw2.cache.amazonaws.com';
-const REDIS_PORT = 6379;
+require('dotenv').config();
 
 // Redis db, prepared for production deployment :)
 const redisClient = redis.createClient({
-    host: REDIS_ENDPOINT,
-    port: REDIS_PORT,
+    host: process.env.REDIS_URI,
+    port: process.env.REDIS_PORT,
     legacyMode: true
 });
 
