@@ -3,9 +3,14 @@ const redis = require("redis");
 require('dotenv').config();
 
 // Redis db, prepared for production deployment :)
+// const redisClient = redis.createClient({
+//     host: "",
+//     port: 6379,
+//     legacyMode: true
+// });
+
 const redisClient = redis.createClient({
-    host: "redis-sessions.ktgg4o.clustercfg.euw2.cache.amazonaws.com",
-    port: 6379,
+    url: 'redis://redis:6379',
     legacyMode: true
 });
 

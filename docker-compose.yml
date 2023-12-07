@@ -1,0 +1,38 @@
+version: '24.0.6'
+
+# services for backend 
+services:
+  ai-facerecognition-backend:
+    container_name: backend
+    build: ./
+    command: npm start
+    working_dir: /the/workdir/Ai-FaceRecognition-Backend
+    environment:
+      POSTGRES_URI: postgres://jakub:lekcja11@postgres:5432/docker-face-recogn # custom URI for connecting to our DB
+      REDIS_URI: redis://redis:6379
+      EMAIL_USER: facerecnewai@gmail.com
+      EMAIL_PASS: wsab hfua tbdn fxvc
+    links:
+     - postgres
+     - redis
+    ports: 
+      - "3001:3001"
+    volumes:
+      - ./:/the/workdir/Ai-FaceRecognition-Backend
+
+# services for PSQL
+  postgres:
+    build: ./postgres
+    environment:
+      POSTGRES_USER: jakub
+      POSTGRES_PASSWORD: lekcja11
+      POSTGRES_DB: docker-face-recogn
+      POSTGRES_HOST: postgres
+    ports:
+      - "5432:5432"
+      
+# services for redis db
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"

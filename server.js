@@ -26,14 +26,19 @@ app.use(cors())
 // Establising connection with our localy stored database on docker
 const db = knex({
     client: 'pg',
-    connection: {
-        host : "face-recogn-db.cpdy0cwju4g1.eu-west-2.rds.amazonaws.com", 
-        user : "postgres", 
-        password : "lekcja11", 
-        database : "postgres", 
-        port: 5432 
-    }
+    connection: process.env.POSTGRES_URI
 });
+
+// const db = knex({
+//     client: 'pg',
+//     connection: {
+//         host : "face-recogn-db.cpdy0cwju4g1.eu-west-2.rds.amazonaws.com", 
+//         user : "postgres", 
+//         password : "lekcja11", 
+//         database : "postgres", 
+//         port: 5432 
+//     }
+// });
 
 
 
