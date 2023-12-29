@@ -6,7 +6,7 @@ CREATE TABLE users (
     email text UNIQUE NOT NULL,
     entries BIGINT DEFAULT 0,
     joined TIMESTAMP NOT NULL,
-    verification_token VARCHAR(240),
+    verification_token VARCHAR(1024),
     email_verified BOOLEAN,
     profile_img BYTEA
 );
