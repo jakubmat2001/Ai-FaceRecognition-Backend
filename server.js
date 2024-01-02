@@ -14,7 +14,9 @@ const image = require('./controller/image');
 const password = require('./controller/newPassword')
 const deleteAccount = require('./controller/deleteAccount')
 const resendVerification = require('./controller/emailVerification')
+const usersData = require('./controller/score')
 const auth = require("./controller/authorization")
+
 
 const app = express()
 app.use(bodyParser.json({limit: '10mb'}));
@@ -54,10 +56,11 @@ app.post("/profile/:id", upload.fields([{ name: 'image' }, { name: 'name' }]), a
     });
 
 app.post("/imageurl", auth.requireAuth,(req, res) => { image.handleImageURL(req, res) });
-app.post("/resend-verification", (req, res) => {resendVerification.resendVerificationEmail(req, res, db)})
+app.post("/resend-verification", (req, res) => {resendVerification.resendVerificationEmail(req, res, db)});
 
 app.get("/profile/:id",  auth.requireAuth, (req, res) => { profile.handleProfile(req, res, db) });
 app.get("/verify-email", (req, res) => { resendVerification.verifyUser(req, res, db) });
+app.get("/score", auth.requireAuth, (req, res) => { usersData.getAllUsersData(req, res, db)});
 app.get("/", (req, res) => res.json("app is running flawlessly"))
 
 app.put("/image", auth.requireAuth, (req, res) => { image.handleImage(req, res, db) });
